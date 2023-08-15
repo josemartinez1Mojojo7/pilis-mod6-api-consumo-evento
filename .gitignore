@@ -1,0 +1,12 @@
+# Módulos y dependencias de Node.js
+/node_modules
+
+# Archivos generados por herramientas de construcción
+/dist
+/build
+
+# Archivos y directorios específicos del entorno de desarrollo
+.env
+
+# Directorio de db
+/mysql_data
