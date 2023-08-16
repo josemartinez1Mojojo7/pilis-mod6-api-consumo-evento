@@ -7,7 +7,7 @@ import {
   ManyToOne
 } from 'typeorm'
 import { Business } from './Business'
-import { Account } from './Account'
+import { Wallet } from './Wallet'
 
 @Entity()
 export class Transaction extends BaseEntity {
@@ -26,6 +26,6 @@ export class Transaction extends BaseEntity {
   @ManyToOne(() => Business, (business) => business.id)
   businnes: Business
 
-  @ManyToOne(() => Account, (account) => account.id)
-  account: Account
+  @ManyToOne(() => Wallet, (wallet) => wallet.id)
+  wallet: Wallet
 }
