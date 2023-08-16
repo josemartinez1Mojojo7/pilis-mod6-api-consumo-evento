@@ -9,7 +9,7 @@ import {
 import { User } from './User'
 
 @Entity()
-export class Account extends BaseEntity {
+export class Wallet extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
