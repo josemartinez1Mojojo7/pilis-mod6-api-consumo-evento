@@ -5,6 +5,7 @@ import passportMiddleware from './middlewares/passport'
 import passport from 'passport'
 
 import routeAuthentication from './routes/authentication.route'
+import routeUser from './routes/user.route'
 
 const app = express()
 
@@ -16,5 +17,6 @@ app.use(passport.initialize())
 passport.use(passportMiddleware)
 
 app.use('/api', routeAuthentication)
+app.use('/api', routeUser)
 
 export default app
