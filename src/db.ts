@@ -1,5 +1,9 @@
 import { DataSource } from 'typeorm'
 import dotenv from 'dotenv'
+import { Account } from './entities/Account'
+import { Business } from './entities/Business'
+import { Transaction } from './entities/Transaction'
+import { User } from './entities/User'
 dotenv.config()
 
 export const AppDataSource = new DataSource({
@@ -11,5 +15,5 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
   synchronize: true,
-  entities: []
+  entities: [Account, Business, Transaction, User]
 })
