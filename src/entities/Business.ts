@@ -31,6 +31,6 @@ export class Business extends BaseEntity {
   @JoinColumn()
   user: User
 
-  @OneToMany(() => Transaction, (transaction) => transaction.businnes)
+  @OneToMany(() => Transaction, (transaction) => transaction.business)
   transaction: Transaction[]
 }
