@@ -24,7 +24,7 @@ export class Transaction extends BaseEntity {
   type: string
 
   @ManyToOne(() => Business, (business) => business.id)
-  businnes: Business
+  business: Business
 
   @ManyToOne(() => Wallet, (wallet) => wallet.id)
   wallet: Wallet

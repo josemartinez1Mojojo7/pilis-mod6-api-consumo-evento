@@ -4,9 +4,11 @@ import {
   PrimaryGeneratedColumn,
   BaseEntity,
   JoinColumn,
-  OneToOne
+  OneToOne,
+  OneToMany
 } from 'typeorm'
 import { User } from './User'
+import { Transaction } from './Transaction'
 
 @Entity()
 export class Wallet extends BaseEntity {
@@ -19,4 +21,7 @@ export class Wallet extends BaseEntity {
   @OneToOne(() => User)
   @JoinColumn()
   user: User
+
+  @OneToMany(() => Transaction, (transaction) => transaction.business)
+  transaction: Transaction[]
 }

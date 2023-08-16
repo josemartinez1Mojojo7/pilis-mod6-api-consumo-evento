@@ -6,6 +6,7 @@ import passport from 'passport'
 
 import routeAuthentication from './routes/authentication.route'
 import routeUser from './routes/user.route'
+import routeWallet from './routes/wallet.route'
 
 const app = express()
 
@@ -18,5 +19,6 @@ passport.use(passportMiddleware)
 
 app.use('/api', routeAuthentication)
 app.use('/api', routeUser)
+app.use('/api', routeWallet)
 
 export default app
