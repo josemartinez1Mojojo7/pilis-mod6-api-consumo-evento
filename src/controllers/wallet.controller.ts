@@ -1,6 +1,10 @@
 import { Request, Response } from 'express'
 import { Wallet } from '../entities/Wallet'
 import { User } from '../entities/User'
+import {
+  toNewWalletEntry,
+  toUpdateWalletEntry
+} from '../utils/types.wallet.util'
 
 export const getWallets = async (req: Request, res: Response) => {
   try {
@@ -31,18 +35,19 @@ export const getWallet = async (req: Request, res: Response) => {
   }
 }
 export const createWallet = async (req: Request, res: Response) => {
-  const { balance, idUser } = req.body
   try {
-    const user = await User.findOneBy({ id: parseInt(idUser) })
-    if (user != null) {
+    const typeWallet = toNewWalletEntry(req.body)
+    const user = await User.findOneBy({ id: typeWallet.idUser })
+    if (user == null)
+      return res.status(404).json({ messagge: 'User Not Exist' })
+    if (user.role === 'client') {
       const wallet = new Wallet()
-      wallet.balance = balance
+      wallet.balance = typeWallet.balance
       wallet.user = user
-
       await wallet.save()
       return res.status(201).json(wallet)
     } else {
-      return res.status(404).json({ messagge: 'User Not Exist' })
+      return res.status(404).json({ messagge: 'User is Not Client ' })
     }
   } catch (error) {
     if (error instanceof Error) {
@@ -52,23 +57,13 @@ export const createWallet = async (req: Request, res: Response) => {
 }
 export const updateWallet = async (req: Request, res: Response) => {
   const { id } = req.params
-  const { balance, idUser } = req.body
   try {
+    const typeWallet = toUpdateWalletEntry(req.body)
     const wallet = await Wallet.findOneBy({ id: parseInt(id) })
     if (wallet == null)
       return res.status(404).json({ messagge: 'Wallet Not Found' })
     const auxwallet = new Wallet()
-    auxwallet.balance = balance
-    if (idUser) {
-      const user = await User.findOneBy({ id: parseInt(idUser) })
-      if (user != null) {
-        auxwallet.user = user
-        await Wallet.update({ id: parseInt(id) }, auxwallet)
-        return res.sendStatus(204)
-      } else {
-        return res.status(404).json({ messagge: 'User Not Exist' })
-      }
-    }
+    auxwallet.balance = typeWallet.balance
     await Wallet.update({ id: parseInt(id) }, auxwallet)
     return res.sendStatus(204)
   } catch (error) {
