@@ -3,6 +3,7 @@ import { User } from '../entities/User'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { toNewUserEntry } from '../utils/types.user.util'
+import { Wallet } from '../entities/Wallet'
 
 const jwtSecret = 'somesecrettoken'
 const jwtRefreshTokenSecret = 'somesecrettokenrefresh'
@@ -11,10 +12,6 @@ const refreshTokens: Array<string | undefined> = []
 export const signUp = async (req: Request, res: Response) => {
   try {
     const typeUser = toNewUserEntry(req.body)
-    // const { fullname, dni, email, password, role } = req.body
-    // if (!fullname || !dni || !email || !password || !role) {
-    //   return res.status(400).json({ msg: 'Please. Send your data' })
-    // }
     const user = await User.findOneBy({ email: typeUser.email })
     if (user) {
       return res.status(400).json({ msg: 'The User already Exists' })
@@ -25,8 +22,16 @@ export const signUp = async (req: Request, res: Response) => {
     newUser.email = typeUser.email
     newUser.password = await createHash(typeUser.password)
     newUser.role = typeUser.role
-    await newUser.save()
-    return res.status(201).json({ credentials: createToken(newUser) })
+    if (newUser.role === 'client') {
+      const wallet = new Wallet()
+      wallet.balance = 0
+      wallet.user = newUser
+      await newUser.save()
+      await wallet.save()
+      return res.status(201).json({ credentials: createToken(newUser) })
+    } else {
+      return res.status(404).json({ messagge: 'User is Not Client ' })
+    }
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ messagge: error.message })
