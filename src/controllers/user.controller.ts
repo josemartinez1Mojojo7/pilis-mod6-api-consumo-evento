@@ -1,11 +1,19 @@
 import { Request, Response } from 'express'
 import { User } from '../entities/User'
 import { createHash } from './authentication.controller'
+import { toNewUserEntry, toUpdateUserEntry } from '../utils/types.user.util'
+import { NonSensitiveInfoUserEntry, UserEntry } from '../utils/types.user'
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
     const users = await User.find()
-    return res.status(200).json(users)
+    const auxusers: UserEntry[] = users as UserEntry[]
+    const getEntriesWithoutSensitiveInfo = (): NonSensitiveInfoUserEntry[] => {
+      return auxusers.map(({ id, fullname, dni, email, role }) => {
+        return { id, fullname, dni, email, role }
+      })
+    }
+    return res.status(200).json(getEntriesWithoutSensitiveInfo())
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ messagge: error.message })
@@ -18,7 +26,12 @@ export const getUser = async (req: Request, res: Response) => {
     const user = await User.findOneBy({ id: parseInt(id) })
     if (user == null)
       return res.status(404).json({ messagge: 'User Not Found' })
-    return res.status(200).json(user)
+    const auxuser: UserEntry = user as UserEntry
+    const getEntryWithoutSensitiveInfo = (): NonSensitiveInfoUserEntry => {
+      const { password, ...resOfUser } = auxuser
+      return resOfUser
+    }
+    return res.status(200).json(getEntryWithoutSensitiveInfo())
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ messagge: error.message })
@@ -26,14 +39,14 @@ export const getUser = async (req: Request, res: Response) => {
   }
 }
 export const createUser = async (req: Request, res: Response) => {
-  const { fullname, email, dni, password, role } = req.body
   try {
+    const typeUser = toNewUserEntry(req.body)
     const user = new User()
-    user.fullname = fullname
-    user.dni = dni
-    user.email = email
-    user.password = await createHash(password)
-    user.role = role
+    user.fullname = typeUser.fullname
+    user.dni = typeUser.dni
+    user.email = typeUser.email
+    user.password = await createHash(typeUser.password)
+    user.role = typeUser.role
     await user.save()
     return res.status(201).json(user)
   } catch (error) {
@@ -44,19 +57,19 @@ export const createUser = async (req: Request, res: Response) => {
 }
 export const updateUser = async (req: Request, res: Response) => {
   const { id } = req.params
-  const { fullname, email, dni, password, role } = req.body
   try {
+    const typeUser = toUpdateUserEntry(req.body)
     const user = await User.findOneBy({ id: parseInt(id) })
     if (user == null)
       return res.status(404).json({ messagge: 'User Not Found' })
     const auxUser = new User()
-    auxUser.fullname = fullname
-    auxUser.dni = dni
-    auxUser.email = email
-    if (password) {
-      auxUser.password = await createHash(password)
+    auxUser.fullname = typeUser.fullname
+    auxUser.dni = typeUser.dni
+    auxUser.email = typeUser.email
+    if (typeUser.password) {
+      auxUser.password = await createHash(typeUser.password)
     }
-    auxUser.role = role
+    auxUser.role = typeUser.role
     await User.update({ id: parseInt(id) }, auxUser)
     return res.sendStatus(204)
   } catch (error) {
