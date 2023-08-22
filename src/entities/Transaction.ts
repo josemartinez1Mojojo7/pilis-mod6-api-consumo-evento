@@ -17,7 +17,7 @@ export class Transaction extends BaseEntity {
   @CreateDateColumn()
   date: Date
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('float', { precision: 10, scale: 2 })
   amount: number
 
   @Column()

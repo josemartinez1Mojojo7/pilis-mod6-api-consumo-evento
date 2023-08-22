@@ -15,7 +15,7 @@ export class Wallet extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('float', { precision: 10, scale: 2 })
   balance: number
 
   @OneToOne(() => User)
