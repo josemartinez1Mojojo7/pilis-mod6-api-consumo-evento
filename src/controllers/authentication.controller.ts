@@ -1,12 +1,15 @@
 import { Request, Response } from 'express'
 import { User } from '../entities/User'
+import { Wallet } from '../entities/Wallet'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { toNewUserEntry } from '../utils/types.user.util'
-import { Wallet } from '../entities/Wallet'
+import dotenv from 'dotenv'
 
-const jwtSecret = 'somesecrettoken'
-const jwtRefreshTokenSecret = 'somesecrettokenrefresh'
+dotenv.config()
+
+const jwtSecret = process.env.JWT_SECRET_KEY!
+const jwtRefreshTokenSecret = process.env.JWT_SECRET_KEY_REFRESH!
 const refreshTokens: Array<string | undefined> = []
 
 export const signUp = async (req: Request, res: Response) => {
