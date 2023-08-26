@@ -44,6 +44,7 @@ export const createWallet = async (req: Request, res: Response) => {
     if (user.role === 'client') {
       const wallet = new Wallet()
       wallet.code = crypto.randomBytes(2).readUInt16BE() % 10000
+      wallet.expAt = new Date()
       wallet.balance = typeWallet.balance
       wallet.user = user
       await wallet.save()
@@ -65,7 +66,7 @@ export const updateWallet = async (req: Request, res: Response) => {
     if (wallet == null)
       return res.status(404).json({ messagge: 'Wallet Not Found' })
     const auxwallet = new Wallet()
-    auxwallet.balance = typeWallet.balance
+    auxwallet.balance = wallet.balance + typeWallet.balance
     await Wallet.update({ id: parseInt(id) }, auxwallet)
     return res.sendStatus(204)
   } catch (error) {
@@ -88,22 +89,6 @@ export const deleteWallet = async (req: Request, res: Response) => {
   }
 }
 
-export const getWalletByUser = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params
-    const wallet = await Wallet.findOne({
-      where: { user: { id: parseInt(id) } },
-      relations: ['user', 'transaction']
-    })
-    if (wallet == null)
-      return res.status(404).json({ messagge: 'Wallet Not Found' })
-    return res.status(200).json(wallet)
-  } catch (error) {
-    if (error instanceof Error) {
-      return res.status(500).json({ messagge: error.message })
-    }
-  }
-}
 export const updateWalletCode = async (req: Request, res: Response) => {
   const { id } = req.params
   try {
@@ -112,6 +97,10 @@ export const updateWalletCode = async (req: Request, res: Response) => {
       return res.status(404).json({ messagge: 'Wallet Not Found' })
     const auxwallet = new Wallet()
     auxwallet.code = crypto.randomBytes(2).readUInt16BE() % 10000
+    const fechaActual = new Date()
+    fechaActual.setHours(fechaActual.getHours() - 3)
+    fechaActual.setMinutes(fechaActual.getMinutes() + 5)
+    auxwallet.expAt = fechaActual
     await Wallet.update({ id: parseInt(id) }, auxwallet)
     return res.status(200).json({ code: auxwallet.code })
   } catch (error) {
@@ -120,16 +109,30 @@ export const updateWalletCode = async (req: Request, res: Response) => {
     }
   }
 }
-export const getWalletByCode = async (req: Request, res: Response) => {
+export const getWalletValidateCode = async (req: Request, res: Response) => {
   try {
-    const { code } = req.params
+    const { code, dni } = req.body
+
+    const user = await User.findOneBy({ dni: parseInt(dni) })
+    if (user == null)
+      return res.status(404).json({ messagge: 'User Not Found' })
+
     const wallet = await Wallet.findOne({
       where: { code: parseInt(code) },
       relations: ['user']
     })
     if (wallet == null)
       return res.status(404).json({ messagge: 'Wallet Not Found' })
-    return res.status(200).json(wallet)
+
+    if (wallet.user.id !== user.id)
+      return res.status(404).json({ messagge: 'Code Not partain to User' })
+
+    const fechaActual = new Date()
+    fechaActual.setHours(fechaActual.getHours() - 3)
+    if (wallet.expAt < fechaActual)
+      return res.status(404).json({ messagge: 'Code Expired' })
+
+    return res.status(200).json({ validate: true, user, wallet })
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ messagge: error.message })
