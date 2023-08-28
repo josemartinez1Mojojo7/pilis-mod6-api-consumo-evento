@@ -37,3 +37,16 @@ export const authAdmin = (req: Request, res: Response, next: NextFunction) => {
     next()
   })(req, res, next)
 }
+
+export const authAdminSeller = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  passport.authenticate('jwt', { session: false }, (user: any) => {
+    if (user.role !== 'admin' && user.role !== 'seller') {
+      return res.status(403).json({ message: 'Usuario sin permiso' })
+    }
+    next()
+  })(req, res, next)
+}

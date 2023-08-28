@@ -18,7 +18,7 @@ export class Business extends BaseEntity {
   @Column()
   name: string
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('float', { precision: 10, scale: 2 })
   balance: number
 
   @Column()
