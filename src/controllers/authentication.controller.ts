@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { toNewUserEntry } from '../utils/types.user.util'
 import dotenv from 'dotenv'
+import { generarCode } from '../controllers/wallet.controller'
 
 dotenv.config()
 
@@ -28,6 +29,7 @@ export const signUp = async (req: Request, res: Response) => {
     if (newUser.role === 'client') {
       const wallet = new Wallet()
       wallet.balance = 0
+      wallet.code = generarCode(process.env.CODE_DIGITS_NUNBER)
       const fechaActual = new Date()
       fechaActual.setHours(fechaActual.getHours() - 3)
       wallet.expAt = fechaActual
