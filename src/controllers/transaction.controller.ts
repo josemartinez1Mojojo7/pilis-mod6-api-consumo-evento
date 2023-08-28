@@ -43,7 +43,6 @@ export const createTransaction = async (req: Request, res: Response) => {
     const wallet = await Wallet.findOneBy({ id: typeTransaction.idWallet })
     if (business && wallet) {
       const transaction = new Transaction()
-      transaction.date = new Date(typeTransaction.date)
       if (wallet.balance < typeTransaction.amount) {
         return res
           .status(409)

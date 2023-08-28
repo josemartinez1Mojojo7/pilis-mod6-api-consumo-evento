@@ -4,7 +4,8 @@ import {
   createTransaction,
   getTransaction
 } from '../controllers/transaction.controller'
-import { auth, authAdminSeller } from '../middlewares/passport'
+import { auth } from '../middlewares/auth'
+import { authAdminSeller } from '../middlewares/authAdminSeller'
 
 const router = Router()
 

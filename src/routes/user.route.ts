@@ -6,7 +6,8 @@ import {
   updateUser,
   deleteUser
 } from '../controllers/user.controller'
-import { auth, authAdmin } from '../middlewares/passport'
+import { auth } from '../middlewares/auth'
+import { authAdmin } from '../middlewares/authAdmin'
 
 const router = Router()
 

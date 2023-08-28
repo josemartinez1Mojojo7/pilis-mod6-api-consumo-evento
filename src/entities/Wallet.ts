@@ -15,6 +15,12 @@ export class Wallet extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
+  @Column({ unique: true })
+  code: number
+
+  @Column({ type: 'datetime' })
+  expAt: Date
+
   @Column('float', { precision: 10, scale: 2 })
   balance: number
 
@@ -22,6 +28,6 @@ export class Wallet extends BaseEntity {
   @JoinColumn()
   user: User
 
-  @OneToMany(() => Transaction, (transaction) => transaction.business)
+  @OneToMany(() => Transaction, (transaction) => transaction.wallet)
   transaction: Transaction[]
 }

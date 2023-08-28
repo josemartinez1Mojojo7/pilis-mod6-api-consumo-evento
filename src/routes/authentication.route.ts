@@ -4,7 +4,7 @@ import {
   signUp,
   refresh
 } from '../controllers/authentication.controller'
-import { auth } from '../middlewares/passport'
+import { auth } from '../middlewares/auth'
 
 const router = Router()
 router.post('/signup', signUp)

@@ -7,14 +7,14 @@ import {
   deleteBusiness
 } from '../controllers/business.controller'
 
-import { auth, authAdmin } from '../middlewares/passport'
-import { validateRole } from '../middlewares/role.business'
+import { auth } from '../middlewares/auth'
+import { authAdmin } from '../middlewares/authAdmin'
 
 const router = Router()
 
 router.get('/business', [auth, authAdmin], getBusinesses)
-router.get('/business/:id', auth, getBusiness)
-router.post('/business', [auth, authAdmin, validateRole], createBusiness)
+router.get('/business/:id', [auth, authAdmin], getBusiness)
+router.post('/business', [auth, authAdmin], createBusiness)
 router.put('/business/:id', [auth, authAdmin], updateBusiness)
 router.delete('/business/:id', [auth, authAdmin], deleteBusiness)
 
