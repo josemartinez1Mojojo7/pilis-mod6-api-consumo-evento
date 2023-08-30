@@ -5,10 +5,11 @@ import {
   toNewBusinessEntry,
   toUpdateBusinessEntry
 } from '../utils/types.business.util'
+import dotenv from 'dotenv'
 
-const maxLocations = 15
+dotenv.config()
 
-const verifLocation = async (location: number) => {
+async function verifLocation(location: number) {
   const bussinessLocation = await Business.findOneBy({ location })
   return bussinessLocation === null
 }
@@ -46,14 +47,16 @@ export const getBusiness = async (req: Request, res: Response) => {
 export const createBusiness = async (req: Request, res: Response) => {
   const typeBusiness = toNewBusinessEntry(req.body)
 
-  const totalCount = await Business.count()
+  const maxLocations = parseInt(process.env.MAX_LOCATIONS!)
+  const totalCount = Business.count()
+
   try {
     const user = await User.findOneBy({
       id: typeBusiness.idUser
     })
 
     if (user != null) {
-      if (totalCount < maxLocations) {
+      if ((await totalCount) < maxLocations) {
         if (await verifLocation(typeBusiness.location)) {
           const business = new Business()
           business.name = typeBusiness.name
