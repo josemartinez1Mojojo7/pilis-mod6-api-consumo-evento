@@ -14,7 +14,7 @@ export class Transaction extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'datetime' })
   date: Date
 
   @Column('float', { precision: 10, scale: 2 })

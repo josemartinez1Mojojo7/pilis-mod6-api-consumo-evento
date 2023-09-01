@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { toNewUserEntry } from '../utils/types.user.util'
 import dotenv from 'dotenv'
+import { generarCode } from '../controllers/wallet.controller'
 
 dotenv.config()
 
@@ -28,6 +29,10 @@ export const signUp = async (req: Request, res: Response) => {
     if (newUser.role === 'client') {
       const wallet = new Wallet()
       wallet.balance = 0
+      wallet.code = generarCode(process.env.CODE_DIGITS_NUNBER)
+      const fechaActual = new Date()
+      fechaActual.setHours(fechaActual.getHours() - 3)
+      wallet.expAt = fechaActual
       wallet.user = newUser
       await newUser.save()
       await wallet.save()
@@ -65,14 +70,19 @@ export const signIn = async (
 
 const createToken = (user: User) => {
   const token = jwt.sign(
-    { id: user.id, email: user.email, role: user.role },
+    {
+      id: user.id,
+      fullname: user.fullname,
+      email: user.email,
+      role: user.role
+    },
     jwtSecret,
     {
       expiresIn: '86400s'
     }
   )
   const refreshToken = jwt.sign(
-    { email: user.email, role: user.role },
+    { fullname: user.fullname, email: user.email, role: user.role },
     jwtRefreshTokenSecret,
     {
       expiresIn: '1d'
@@ -125,7 +135,12 @@ export const refresh = async (req: Request, res: Response): Promise<any> => {
       return res.status(400).json({ msg: 'The User does not exists' })
     }
     const accessToken = jwt.sign(
-      { id: userFound.id, email: userFound.email, role: userFound.role },
+      {
+        id: userFound.id,
+        fullname: userFound.fullname,
+        email: userFound.email,
+        role: userFound.role
+      },
       jwtSecret,
       { expiresIn: '300s' }
     )

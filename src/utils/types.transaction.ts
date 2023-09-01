@@ -7,4 +7,4 @@ export interface TransactionEntry {
   idWallet: number
 }
 
-export type NewTransactionEntry = Omit<TransactionEntry, 'id' | 'type'>
+export type NewTransactionEntry = Omit<TransactionEntry, 'id' | 'type' | 'date'>

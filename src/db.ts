@@ -15,5 +15,6 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
   synchronize: true,
-  entities: [Wallet, Business, Transaction, User]
+  entities: [Wallet, Business, Transaction, User],
+  timezone: '+03:00'
 })

@@ -18,6 +18,9 @@ export class Wallet extends BaseEntity {
   @Column({ unique: true })
   code: number
 
+  @Column({ type: 'datetime' })
+  expAt: Date
+
   @Column('float', { precision: 10, scale: 2 })
   balance: number
 
