@@ -6,7 +6,8 @@ import {
   updateWallet,
   deleteWallet,
   updateWalletCode,
-  getWalletValidateCode
+  getWalletValidateCode,
+  getWalletByUser
 } from '../controllers/wallet.controller'
 import { auth } from '../middlewares/auth'
 import { authAdmin } from '../middlewares/authAdmin'
@@ -27,5 +28,6 @@ router.post(
   [auth, authAdminSeller],
   getWalletValidateCode
 )
+router.get('/wallets/user/:id', [auth, authAdminClient], getWalletByUser)
 
 export default router

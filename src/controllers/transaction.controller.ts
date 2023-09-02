@@ -12,7 +12,7 @@ export const getTransactions = async (req: Request, res: Response) => {
     return res.status(200).json(transactions)
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(500).json({ messagge: error.message })
+      return res.status(500).json({ message: error.message })
     }
   }
 }
@@ -25,11 +25,11 @@ export const getTransaction = async (req: Request, res: Response) => {
       relations: ['business', 'account']
     })
     if (!transactions)
-      return res.status(404).json({ messagge: 'Transactions Not Found' })
+      return res.status(404).json({ message: 'Transactions Not Found' })
     return res.status(200).json(transactions)
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(500).json({ messagge: error.message })
+      return res.status(500).json({ message: error.message })
     }
   }
 }
@@ -46,7 +46,7 @@ export const createTransaction = async (req: Request, res: Response) => {
       if (wallet.balance < typeTransaction.amount) {
         return res
           .status(409)
-          .json({ messagge: 'You do not have enough balance' })
+          .json({ message: 'You do not have enough balance' })
       }
       transaction.amount = typeTransaction.amount
       transaction.type = business.type
@@ -64,11 +64,11 @@ export const createTransaction = async (req: Request, res: Response) => {
     } else {
       return res
         .status(404)
-        .json({ messagge: 'Business Not Exist or Wallet Not Exist' })
+        .json({ message: 'Business Not Exist or Wallet Not Exist' })
     }
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(500).json({ messagge: error.message })
+      return res.status(500).json({ message: error.message })
     }
   }
 }
