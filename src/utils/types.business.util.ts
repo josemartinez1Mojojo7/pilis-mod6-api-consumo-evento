@@ -4,7 +4,6 @@ import { Business } from '../entities/Business'
 export const toNewBusinessEntry = (object: any): NewBusinessEntry => {
   return {
     name: parseName(object.name),
-    balance: parseBalance(object.balance),
     location: parseLocation(object.location),
     type: parseType(object.type),
     idUser: parseUser(object.idUser)

@@ -45,35 +45,31 @@ export const getBusiness = async (req: Request, res: Response) => {
   }
 }
 export const createBusiness = async (req: Request, res: Response) => {
-  const typeBusiness = toNewBusinessEntry(req.body)
-
-  const maxLocations = parseInt(process.env.MAX_LOCATIONS!)
-  const totalCount = Business.count()
-
   try {
+    const typeBusiness = toNewBusinessEntry(req.body)
+    const maxLocations = parseInt(process.env.MAX_LOCATIONS!)
+    const totalCount = Business.count()
     const user = await User.findOneBy({
       id: typeBusiness.idUser
     })
-
-    if (user != null) {
-      if ((await totalCount) < maxLocations) {
-        if (await verifLocation(typeBusiness.location)) {
-          const business = new Business()
-          business.name = typeBusiness.name
-          business.balance = typeBusiness.balance
-          business.location = typeBusiness.location
-          business.type = typeBusiness.type
-          business.user = user
-          await business.save()
-          return res.status(201).json(business)
-        } else {
-          return res.status(401).json({ message: 'Ubicacion ya asignada' })
-        }
-      } else {
-        return res.status(401).json({ message: 'Capacidad de locales llenos' })
-      }
-    } else {
+    if (user == null)
       return res.status(404).json({ messagge: 'User Not Exist' })
+    if (user.role !== 'seller')
+      return res.status(404).json({ messagge: 'User is Not Seller ' })
+    if ((await totalCount) >= maxLocations)
+      return res.status(401).json({ message: 'Capacidad de locales llenos' })
+
+    if (await verifLocation(typeBusiness.location)) {
+      const business = new Business()
+      business.name = typeBusiness.name
+      business.balance = 0
+      business.location = typeBusiness.location
+      business.type = typeBusiness.type
+      business.user = user
+      await business.save()
+      return res.status(201).json(business)
+    } else {
+      return res.status(401).json({ message: 'Ubicacion ya asignada' })
     }
   } catch (error) {
     if (error instanceof Error) {
@@ -91,7 +87,6 @@ export const updateBusiness = async (req: Request, res: Response) => {
     if (await verifLocation(typeBusiness.location)) {
       const auxBusiness = new Business()
       auxBusiness.name = typeBusiness.name
-      auxBusiness.balance = typeBusiness.balance
       auxBusiness.location = typeBusiness.location
       auxBusiness.type = typeBusiness.type
       await Business.update({ id: parseInt(id) }, auxBusiness)
