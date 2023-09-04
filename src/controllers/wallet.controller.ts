@@ -101,7 +101,10 @@ export const updateWalletCode = async (req: Request, res: Response) => {
     auxwallet.code = generarCode(process.env.CODE_DIGITS_NUNBER)
     auxwallet.expAt = generarFechaExp(process.env.CODE_EXPIRE_TIME)
     await Wallet.update({ id: parseInt(id) }, auxwallet)
-    return res.status(200).json({ code: auxwallet.code })
+    return res.status(200).json({
+      code: auxwallet.code,
+      expAt: auxwallet.expAt
+    })
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ message: error.message })
