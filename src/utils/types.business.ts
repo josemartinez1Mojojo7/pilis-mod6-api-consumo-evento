@@ -8,4 +8,7 @@ export interface BusinessEntry {
   idTransaction: number
 }
 
-export type NewBusinessEntry = Omit<BusinessEntry, 'id' | 'idTransaction'>
+export type NewBusinessEntry = Omit<
+  BusinessEntry,
+  'id' | 'balance' | 'idTransaction'
+>
