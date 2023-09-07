@@ -23,7 +23,7 @@ export const getBusinesses = async (req: Request, res: Response) => {
     return res.status(200).json(bussiness)
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(500).json({ messagge: error.message })
+      return res.status(500).json({ message: error.message })
     }
   }
 }
@@ -36,11 +36,11 @@ export const getBusiness = async (req: Request, res: Response) => {
       relations: ['user', 'transaction']
     })
     if (bussiness == null)
-      return res.status(404).json({ messagge: 'Business Not Found' })
+      return res.status(404).json({ message: 'Business Not Found' })
     return res.status(200).json(bussiness)
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(500).json({ messagge: error.message })
+      return res.status(500).json({ message: error.message })
     }
   }
 }
@@ -73,7 +73,7 @@ export const createBusiness = async (req: Request, res: Response) => {
     }
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(500).json({ messagge: error.message })
+      return res.status(500).json({ message: error.message })
     }
   }
 }
@@ -83,7 +83,7 @@ export const updateBusiness = async (req: Request, res: Response) => {
     const typeBusiness = toUpdateBusinessEntry(req.body)
     const business = await Business.findOneBy({ id: parseInt(id) })
     if (business == null)
-      return res.status(404).json({ messagge: 'Business Not Found' })
+      return res.status(404).json({ message: 'Business Not Found' })
     if (await verifLocation(typeBusiness.location)) {
       const auxBusiness = new Business()
       auxBusiness.name = typeBusiness.name
@@ -96,7 +96,7 @@ export const updateBusiness = async (req: Request, res: Response) => {
     }
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(500).json({ messagge: error.message })
+      return res.status(500).json({ message: error.message })
     }
   }
 }
@@ -105,11 +105,11 @@ export const deleteBusiness = async (req: Request, res: Response) => {
   try {
     const result = await Business.delete({ id: parseInt(id) })
     if (result.affected === 0)
-      return res.status(404).json({ messagge: 'Business Not Found' })
+      return res.status(404).json({ message: 'Business Not Found' })
     return res.sendStatus(204)
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(500).json({ messagge: error.message })
+      return res.status(500).json({ message: error.message })
     }
   }
 }

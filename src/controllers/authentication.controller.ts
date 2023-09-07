@@ -18,7 +18,7 @@ export const signUp = async (req: Request, res: Response) => {
     const typeUser = toNewUserEntry(req.body)
     const user = await User.findOneBy({ email: typeUser.email })
     if (user) {
-      return res.status(400).json({ msg: 'The User already Exists' })
+      return res.status(400).json({ message: 'The User already Exists' })
     }
     const newUser = new User()
     newUser.fullname = typeUser.fullname
@@ -38,11 +38,11 @@ export const signUp = async (req: Request, res: Response) => {
       await wallet.save()
       return res.status(201).json({ credentials: createToken(newUser) })
     } else {
-      return res.status(404).json({ messagge: 'User is Not Client ' })
+      return res.status(404).json({ message: 'User is Not Client ' })
     }
   } catch (error) {
     if (error instanceof Error) {
-      return res.status(500).json({ messagge: error.message })
+      return res.status(500).json({ message: error.message })
     }
   }
 }
@@ -53,18 +53,20 @@ export const signIn = async (
 ): Promise<Response> => {
   const { email, password } = req.body
   if (!email || !password) {
-    return res.status(400).json({ msg: 'Please. Send your email and password' })
+    return res
+      .status(400)
+      .json({ message: 'Please. Send your email and password' })
   }
   const user = await User.findOneBy({ email })
   if (!user) {
-    return res.status(400).json({ msg: 'The User does not exists' })
+    return res.status(400).json({ message: 'The User does not exists' })
   }
   const isMatch = await comparePassword(user, password)
   if (isMatch) {
     return res.status(201).json({ credentials: createToken(user) })
   }
   return res.status(400).json({
-    msg: 'The email or password are incorrect'
+    message: 'The email or password are incorrect'
   })
 }
 
@@ -113,7 +115,7 @@ export const refresh = async (req: Request, res: Response): Promise<any> => {
     res.status(401).json({
       errors: [
         {
-          msg: 'Token not found'
+          message: 'Token not found'
         }
       ]
     })
@@ -122,7 +124,7 @@ export const refresh = async (req: Request, res: Response): Promise<any> => {
     res.status(403).json({
       errors: [
         {
-          msg: 'Invalid refresh token'
+          message: 'Invalid refresh token'
         }
       ]
     })
@@ -132,7 +134,7 @@ export const refresh = async (req: Request, res: Response): Promise<any> => {
     const { email } = user as any
     const userFound = (await User.findOneBy({ email })) as User
     if (!userFound) {
-      return res.status(400).json({ msg: 'The User does not exists' })
+      return res.status(400).json({ message: 'The User does not exists' })
     }
     const accessToken = jwt.sign(
       {
@@ -149,7 +151,7 @@ export const refresh = async (req: Request, res: Response): Promise<any> => {
     res.status(403).json({
       errors: [
         {
-          msg: 'Invalid token'
+          message: 'Invalid token'
         }
       ]
     })
