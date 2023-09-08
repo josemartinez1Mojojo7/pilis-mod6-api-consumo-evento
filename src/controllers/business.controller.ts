@@ -52,10 +52,9 @@ export const createBusiness = async (req: Request, res: Response) => {
     const user = await User.findOneBy({
       id: typeBusiness.idUser
     })
-    if (user == null)
-      return res.status(404).json({ messagge: 'User Not Exist' })
+    if (user == null) return res.status(404).json({ message: 'User Not Exist' })
     if (user.role !== 'seller')
-      return res.status(404).json({ messagge: 'User is Not Seller ' })
+      return res.status(404).json({ message: 'User is Not Seller ' })
     if ((await totalCount) >= maxLocations)
       return res.status(401).json({ message: 'Capacidad de locales llenos' })
 
@@ -84,16 +83,18 @@ export const updateBusiness = async (req: Request, res: Response) => {
     const business = await Business.findOneBy({ id: parseInt(id) })
     if (business == null)
       return res.status(404).json({ message: 'Business Not Found' })
-    if (await verifLocation(typeBusiness.location)) {
-      const auxBusiness = new Business()
-      auxBusiness.name = typeBusiness.name
-      auxBusiness.location = typeBusiness.location
-      auxBusiness.type = typeBusiness.type
-      await Business.update({ id: parseInt(id) }, auxBusiness)
-      return res.sendStatus(204)
-    } else {
-      return res.status(401).json({ message: 'Ubicacion ya asignada' })
+    const auxBusiness = new Business()
+    auxBusiness.name = typeBusiness.name
+    if (typeBusiness.location) {
+      if (await verifLocation(typeBusiness.location)) {
+        auxBusiness.location = typeBusiness.location
+      } else {
+        return res.status(401).json({ message: 'Ubicacion ya asignada' })
+      }
     }
+    auxBusiness.type = typeBusiness.type
+    await Business.update({ id: parseInt(id) }, auxBusiness)
+    return res.sendStatus(204)
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ message: error.message })
