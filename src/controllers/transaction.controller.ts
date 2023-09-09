@@ -4,11 +4,45 @@ import { Wallet } from '../entities/Wallet'
 import { Business } from '../entities/Business'
 import { toNewTransactionEntry } from '../utils/types.transaction.util'
 
+const parseReqParam = (ReqParam: any): number => {
+  return(parseInt(ReqParam))
+}
+
+const isNumber = (number: any): boolean => {
+  return typeof number === 'number'
+}
+
 export const getTransactions = async (req: Request, res: Response) => {
+  let transactions;
   try {
-    const transactions = await Transaction.find({
-      relations: { business: true, wallet: true }
+    
+    transactions = await Transaction.find({
+      relations: ['business', 'wallet']
     })
+    
+    if (req.query['wallet']){
+      const id_wallet = parseReqParam(req.query['wallet'])
+      transactions = await Transaction.find({
+        relations: ['business', 'wallet'],
+        where: {
+          wallet: {
+            id: id_wallet
+          }
+        }
+      })
+    }
+    if (req.query['business']){
+      const id_business = parseReqParam(req.query['business'])
+      transactions = await Transaction.find({
+        relations: ['business', 'wallet'],
+        where: {
+          business: {
+            id: id_business
+          }
+        }
+      })
+    }
+
     return res.status(200).json(transactions)
   } catch (error) {
     if (error instanceof Error) {
@@ -26,6 +60,25 @@ export const getTransaction = async (req: Request, res: Response) => {
     })
     if (!transactions)
       return res.status(404).json({ message: 'Transactions Not Found' })
+    return res.status(200).json(transactions)
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ message: error.message })
+    }
+  }
+}
+
+export const getTransactionsByWallet = async (req: Request, res: Response) => {
+  try {
+    const id_wallet = parseReqParam(req.params.id)
+    const transactions = await Transaction.find({
+        relations: ['business', 'wallet'],
+        where: {
+          wallet: {
+            id: id_wallet
+          }
+        }
+      })
     return res.status(200).json(transactions)
   } catch (error) {
     if (error instanceof Error) {
