@@ -9,7 +9,7 @@ export const toNewTransactionEntry = (object: any): NewTransactionEntry => {
 }
 
 const parseAmount = (amountReq: any): number => {
-  if (!amountReq || !isNumber(amountReq)) {
+  if (!amountReq || !isNumber(amountReq) || amountReq < 0) {
     throw new Error('Incorrect or missing amount: ' + amountReq)
   }
   return amountReq

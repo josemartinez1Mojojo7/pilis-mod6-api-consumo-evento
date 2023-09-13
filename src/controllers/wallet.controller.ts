@@ -47,7 +47,7 @@ export const createWallet = async (req: Request, res: Response) => {
       const wallet = new Wallet()
       wallet.code = crypto.randomBytes(2).readUInt16BE() % 10000
       wallet.expAt = new Date()
-      wallet.balance = typeWallet.balance
+      wallet.balance = 0
       wallet.user = user
       await wallet.save()
       return res.status(201).json(wallet)

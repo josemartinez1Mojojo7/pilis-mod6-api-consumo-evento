@@ -13,7 +13,6 @@ export const toNewBusinessEntry = (object: any): NewBusinessEntry => {
 export const toUpdateBusinessEntry = (object: any) => {
   const business = new Business()
   if (object.name) business.name = parseName(object.name)
-  if (object.balance) business.balance = parseBalance(object.balance)
   if (object.location) business.location = parseLocation(object.location)
   if (object.type) business.type = parseType(object.type)
   return business
@@ -26,15 +25,8 @@ const parseName = (nameReq: any): string => {
   return nameReq
 }
 
-const parseBalance = (balanceReq: any): number => {
-  if (!balanceReq || !isNumber(balanceReq)) {
-    throw new Error('Incorrect or missing balance: ' + balanceReq)
-  }
-  return balanceReq
-}
-
 const parseLocation = (locationReq: any): number => {
-  if (!locationReq || !isNumber(locationReq)) {
+  if (!locationReq || !isNumber(locationReq) || locationReq < 0) {
     throw new Error('Incorrect or missing location: ' + locationReq)
   }
   return locationReq

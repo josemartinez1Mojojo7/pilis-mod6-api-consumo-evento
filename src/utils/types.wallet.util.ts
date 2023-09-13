@@ -3,18 +3,18 @@ import { Wallet } from '../entities/Wallet'
 
 export const toNewWalletEntry = (object: any): NewWalletEntry => {
   return {
-    balance: parseBalance(object.balance),
     idUser: parseIdUser(object.idUser)
   }
 }
 export const toUpdateWalletEntry = (object: any) => {
   const wallet = new Wallet()
-  if (object.balance) wallet.balance = parseBalance(object.balance)
+  if (object.balance || object.balance === 0)
+    wallet.balance = parseBalance(object.balance)
   return wallet
 }
 
 const parseBalance = (balanceReq: any): number => {
-  if (!balanceReq || !isNumber(balanceReq)) {
+  if (balanceReq == null || !isNumber(balanceReq) || balanceReq < 0) {
     throw new Error('Incorrect or missing balance: ' + balanceReq)
   }
   return balanceReq
