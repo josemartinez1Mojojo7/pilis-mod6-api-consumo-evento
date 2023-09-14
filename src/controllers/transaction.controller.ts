@@ -5,44 +5,37 @@ import { Business } from '../entities/Business'
 import { toNewTransactionEntry } from '../utils/types.transaction.util'
 
 const parseReqParam = (ReqParam: any): number => {
-  return(parseInt(ReqParam))
-}
-
-const isNumber = (number: any): boolean => {
-  return typeof number === 'number'
+  return parseInt(ReqParam)
 }
 
 export const getTransactions = async (req: Request, res: Response) => {
-  let transactions;
+  let transactions
   try {
-    
     transactions = await Transaction.find({
       relations: ['business', 'wallet']
     })
-    
-    if (req.query['wallet']){
-      const id_wallet = parseReqParam(req.query['wallet'])
+    if (req.query.wallet) {
+      const idWallet = parseReqParam(req.query.wallet)
       transactions = await Transaction.find({
-        relations: ['business', 'wallet'],
+        relations: ['business', 'business.user', 'wallet'],
         where: {
           wallet: {
-            id: id_wallet
+            id: idWallet
           }
         }
       })
     }
-    if (req.query['business']){
-      const id_business = parseReqParam(req.query['business'])
+    if (req.query.business) {
+      const idBusiness = parseReqParam(req.query.business)
       transactions = await Transaction.find({
-        relations: ['business', 'wallet'],
+        relations: ['business', 'wallet', 'wallet.user'],
         where: {
           business: {
-            id: id_business
+            id: idBusiness
           }
         }
       })
     }
-
     return res.status(200).json(transactions)
   } catch (error) {
     if (error instanceof Error) {
@@ -56,7 +49,7 @@ export const getTransaction = async (req: Request, res: Response) => {
     const { id } = req.params
     const transactions = await Transaction.findOne({
       where: { id: parseInt(id) },
-      relations: ['business', 'account']
+      relations: ['business', 'wallet']
     })
     if (!transactions)
       return res.status(404).json({ message: 'Transactions Not Found' })
@@ -70,15 +63,15 @@ export const getTransaction = async (req: Request, res: Response) => {
 
 export const getTransactionsByWallet = async (req: Request, res: Response) => {
   try {
-    const id_wallet = parseReqParam(req.params.id)
+    const idWallet = parseReqParam(req.params.id)
     const transactions = await Transaction.find({
-        relations: ['business', 'wallet'],
-        where: {
-          wallet: {
-            id: id_wallet
-          }
+      relations: ['business', 'wallet'],
+      where: {
+        wallet: {
+          id: idWallet
         }
-      })
+      }
+    })
     return res.status(200).json(transactions)
   } catch (error) {
     if (error instanceof Error) {

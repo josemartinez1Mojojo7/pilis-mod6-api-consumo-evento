@@ -14,13 +14,28 @@ async function verifLocation(location: number) {
   return bussinessLocation === null
 }
 
+const parseReqParam = (ReqParam: any): number => {
+  return parseInt(ReqParam)
+}
+
 export const getBusinesses = async (req: Request, res: Response) => {
+  let business
   try {
-    const bussiness = await Business.find({
+    business = await Business.find({
       relations: { user: true, transaction: true }
     })
-
-    return res.status(200).json(bussiness)
+    if (req.query.user) {
+      const idUser = parseReqParam(req.query.user)
+      business = await Business.find({
+        relations: ['user', 'transaction'],
+        where: {
+          user: {
+            id: idUser
+          }
+        }
+      })
+    }
+    return res.status(200).json(business)
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ message: error.message })
