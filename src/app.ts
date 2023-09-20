@@ -9,6 +9,7 @@ import routeUser from './routes/user.route'
 import routeWallet from './routes/wallet.route'
 import routeBusiness from './routes/business.route'
 import routeTransaction from './routes/transaction.route'
+import routeSurrender from './routes/surrender.route'
 import routeSendmail from './routes/sendmail.route'
 
 const app = express()
@@ -28,6 +29,7 @@ app.use('/api', routeUser)
 app.use('/api', routeWallet)
 app.use('/api', routeBusiness)
 app.use('/api', routeTransaction)
+app.use('/api', routeSurrender)
 app.use('/api', routeSendmail)
 
 export default app

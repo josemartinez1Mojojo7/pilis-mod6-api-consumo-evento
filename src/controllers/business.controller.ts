@@ -22,12 +22,12 @@ export const getBusinesses = async (req: Request, res: Response) => {
   let business
   try {
     business = await Business.find({
-      relations: { user: true, transaction: true }
+      relations: { user: true, transaction: true, surrender: true }
     })
     if (req.query.user) {
       const idUser = parseReqParam(req.query.user)
       business = await Business.find({
-        relations: ['user', 'transaction'],
+        relations: ['user', 'transaction', 'surrender'],
         where: {
           user: {
             id: idUser
@@ -48,7 +48,7 @@ export const getBusiness = async (req: Request, res: Response) => {
     const { id } = req.params
     const bussiness = await Business.findOne({
       where: { id: parseInt(id) },
-      relations: ['user', 'transaction']
+      relations: ['user', 'transaction', 'surrender']
     })
     if (bussiness == null)
       return res.status(404).json({ message: 'Business Not Found' })
