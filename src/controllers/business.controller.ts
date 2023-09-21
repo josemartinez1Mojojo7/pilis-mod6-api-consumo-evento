@@ -51,7 +51,7 @@ export const getBusiness = async (req: Request, res: Response) => {
       relations: ['user', 'transaction', 'surrender']
     })
     if (bussiness == null)
-      return res.status(404).json({ message: 'Business Not Found' })
+      return res.status(404).json({ message: 'Negocio no encontrado' })
     return res.status(200).json(bussiness)
   } catch (error) {
     if (error instanceof Error) {
@@ -67,9 +67,10 @@ export const createBusiness = async (req: Request, res: Response) => {
     const user = await User.findOneBy({
       id: typeBusiness.idUser
     })
-    if (user == null) return res.status(404).json({ message: 'User Not Exist' })
+    if (user == null)
+      return res.status(404).json({ message: 'El usuario no existe' })
     if (user.role !== 'seller')
-      return res.status(404).json({ message: 'User is Not Seller ' })
+      return res.status(404).json({ message: 'El usuario no es vendedor' })
     if ((await totalCount) >= maxLocations)
       return res.status(401).json({ message: 'Capacidad de locales llenos' })
 
@@ -97,14 +98,14 @@ export const updateBusiness = async (req: Request, res: Response) => {
     const typeBusiness = toUpdateBusinessEntry(req.body)
     const business = await Business.findOneBy({ id: parseInt(id) })
     if (business == null)
-      return res.status(404).json({ message: 'Business Not Found' })
+      return res.status(404).json({ message: 'Negocio no encontrado' })
     const auxBusiness = new Business()
     auxBusiness.name = typeBusiness.name
     if (typeBusiness.location) {
       if (await verifLocation(typeBusiness.location)) {
         auxBusiness.location = typeBusiness.location
       } else {
-        return res.status(401).json({ message: 'Ubicacion ya asignada' })
+        return res.status(401).json({ message: 'Ubicación ya asignada' })
       }
     }
     auxBusiness.type = typeBusiness.type
@@ -121,7 +122,7 @@ export const deleteBusiness = async (req: Request, res: Response) => {
   try {
     const result = await Business.delete({ id: parseInt(id) })
     if (result.affected === 0)
-      return res.status(404).json({ message: 'Business Not Found' })
+      return res.status(404).json({ message: 'Negocio no encontrado' })
     return res.sendStatus(204)
   } catch (error) {
     if (error instanceof Error) {

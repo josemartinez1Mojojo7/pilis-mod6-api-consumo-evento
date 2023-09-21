@@ -8,7 +8,7 @@ export const createEmail = async (req: Request, res: Response) => {
   try {
     const { email, subject, message } = req.body
     await sentMail(email, subject, message)
-    return res.status(200).json({ message: 'You email is on the way' })
+    return res.status(200).json({ message: 'Tu correo esta en camino' })
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ message: error.message })
@@ -27,7 +27,7 @@ const sentMail = async (email: string, subject: string, text: string) => {
     }
   })
   await transporter.sendMail({
-    from: `Consumo en Evento <${process.env.TRANSPORTER_EMAIL}>`,
+    from: `GoEvent <${process.env.TRANSPORTER_EMAIL}>`,
     to: email,
     subject,
     text

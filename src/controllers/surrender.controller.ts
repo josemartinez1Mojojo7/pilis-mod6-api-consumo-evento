@@ -34,7 +34,7 @@ export const createSurrender = async (req: Request, res: Response) => {
       id: typeSurrender.idBusiness
     })
     if (business == null)
-      return res.status(404).json({ message: 'Business Not Exist' })
+      return res.status(404).json({ message: 'El negocio no existe' })
     const surrender = new Surrender()
     surrender.startAt = generarFecha(typeSurrender.startAt)
     surrender.endAt = generarFecha(typeSurrender.endAt)

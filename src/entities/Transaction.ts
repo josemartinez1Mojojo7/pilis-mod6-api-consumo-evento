@@ -23,6 +23,9 @@ export class Transaction extends BaseEntity {
   @Column()
   type: string
 
+  @Column({ type: 'boolean', default: false, nullable: true })
+  status: boolean
+
   @ManyToOne(() => Business, (business) => business.id)
   business: Business
 
