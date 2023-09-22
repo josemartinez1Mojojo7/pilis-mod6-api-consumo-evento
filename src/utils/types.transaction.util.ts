@@ -1,3 +1,4 @@
+import { Transaction } from '../entities/Transaction'
 import { NewTransactionEntry } from './types.transaction'
 
 export const toNewTransactionEntry = (object: any): NewTransactionEntry => {
@@ -6,6 +7,11 @@ export const toNewTransactionEntry = (object: any): NewTransactionEntry => {
     idBusiness: parseBusiness(object.idBusiness),
     idWallet: parseWallet(object.idWallet)
   }
+}
+export const toUpdateTransactionEntry = (object: any) => {
+  const transaction = new Transaction()
+  if (object.status != null) transaction.status = parseStatus(object.status)
+  return transaction
 }
 
 const parseAmount = (amountReq: any): number => {
@@ -26,7 +32,16 @@ const parseWallet = (walletReq: any): number => {
   }
   return walletReq
 }
+const parseStatus = (statusReq: any): boolean => {
+  if (statusReq == null || !isBoolean(statusReq)) {
+    throw new Error('Incorrect or missing status: ' + statusReq)
+  }
+  return statusReq
+}
 
 const isNumber = (number: any): boolean => {
   return typeof number === 'number'
+}
+const isBoolean = (boolean: any): boolean => {
+  return typeof boolean === 'boolean'
 }

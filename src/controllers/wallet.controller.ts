@@ -30,7 +30,7 @@ export const getWallet = async (req: Request, res: Response) => {
       relations: ['user', 'transaction']
     })
     if (wallet == null)
-      return res.status(404).json({ message: 'Wallet Not Found' })
+      return res.status(404).json({ message: 'Cartera no encontrada' })
     return res.status(200).json(wallet)
   } catch (error) {
     if (error instanceof Error) {
@@ -42,17 +42,18 @@ export const createWallet = async (req: Request, res: Response) => {
   try {
     const typeWallet = toNewWalletEntry(req.body)
     const user = await User.findOneBy({ id: typeWallet.idUser })
-    if (user == null) return res.status(404).json({ message: 'User Not Exist' })
+    if (user == null)
+      return res.status(404).json({ message: 'El usuario no existe' })
     if (user.role === 'client') {
       const wallet = new Wallet()
-      wallet.code = crypto.randomBytes(2).readUInt16BE() % 10000
-      wallet.expAt = new Date()
+      wallet.code = generarCode(process.env.CODE_DIGITS_NUNBER)
+      wallet.expAt = generarFechaExp(process.env.CODE_EXPIRE_TIME)
       wallet.balance = 0
       wallet.user = user
       await wallet.save()
       return res.status(201).json(wallet)
     } else {
-      return res.status(404).json({ message: 'User is Not Client ' })
+      return res.status(404).json({ message: 'El usuario no es cliente ' })
     }
   } catch (error) {
     if (error instanceof Error) {
@@ -66,7 +67,7 @@ export const updateWallet = async (req: Request, res: Response) => {
     const typeWallet = toUpdateWalletEntry(req.body)
     const wallet = await Wallet.findOneBy({ id: parseInt(id) })
     if (wallet == null)
-      return res.status(404).json({ message: 'Wallet Not Found' })
+      return res.status(404).json({ message: 'Cartera no encontrada' })
     const auxwallet = new Wallet()
     auxwallet.balance = wallet.balance + typeWallet.balance
     await Wallet.update({ id: parseInt(id) }, auxwallet)
@@ -82,7 +83,7 @@ export const deleteWallet = async (req: Request, res: Response) => {
   try {
     const resutl = await Wallet.delete({ id: parseInt(id) })
     if (resutl.affected === 0)
-      return res.status(404).json({ message: 'Wallet Not Found' })
+      return res.status(404).json({ message: 'Cartera no encontrada' })
     return res.sendStatus(204)
   } catch (error) {
     if (error instanceof Error) {
@@ -96,7 +97,7 @@ export const updateWalletCode = async (req: Request, res: Response) => {
   try {
     const wallet = await Wallet.findOneBy({ id: parseInt(id) })
     if (wallet == null)
-      return res.status(404).json({ message: 'Wallet Not Found' })
+      return res.status(404).json({ message: 'Cartera no encontrada' })
     const auxwallet = new Wallet()
     auxwallet.code = generarCode(process.env.CODE_DIGITS_NUNBER)
     auxwallet.expAt = generarFechaExp(process.env.CODE_EXPIRE_TIME)
@@ -119,11 +120,11 @@ export const getWalletValidateCode = async (req: Request, res: Response) => {
       relations: ['user']
     })
     if (wallet == null)
-      return res.status(404).json({ message: 'Wallet Not Found' })
+      return res.status(404).json({ message: 'Cartera no encontrada' })
     const fechaActual = new Date()
     fechaActual.setHours(fechaActual.getHours() - 3)
     if (wallet.expAt < fechaActual)
-      return res.status(404).json({ message: 'Code Expired' })
+      return res.status(404).json({ message: 'Codigo Expirado' })
     return res.status(200).json({ validate: true, wallet })
   } catch (error) {
     if (error instanceof Error) {
@@ -139,7 +140,7 @@ export const getWalletByUser = async (req: Request, res: Response) => {
       relations: ['user', 'transaction']
     })
     if (wallet == null)
-      return res.status(404).json({ message: 'Wallet Not Found' })
+      return res.status(404).json({ message: 'Cartera no encontrada' })
     return res.status(200).json(wallet)
   } catch (error) {
     if (error instanceof Error) {
@@ -157,7 +158,7 @@ export const generarCode = (cant: any) => {
   const numeroAleatorio = crypto.randomInt(parseInt(min), parseInt(max))
   return numeroAleatorio
 }
-const generarFechaExp = (minute: any) => {
+export const generarFechaExp = (minute: any) => {
   const fechaActual = new Date()
   fechaActual.setHours(fechaActual.getHours() - 3)
   fechaActual.setMinutes(fechaActual.getMinutes() + parseInt(minute))

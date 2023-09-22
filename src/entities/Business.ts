@@ -9,6 +9,7 @@ import {
 } from 'typeorm'
 import { User } from './User'
 import { Transaction } from './Transaction'
+import { Surrender } from './Surrender'
 
 @Entity()
 export class Business extends BaseEntity {
@@ -33,4 +34,7 @@ export class Business extends BaseEntity {
 
   @OneToMany(() => Transaction, (transaction) => transaction.business)
   transaction: Transaction[]
+
+  @OneToMany(() => Surrender, (surrender) => surrender.business)
+  surrender: Surrender[]
 }

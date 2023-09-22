@@ -2,7 +2,10 @@ import { Request, Response } from 'express'
 import { Transaction } from '../entities/Transaction'
 import { Wallet } from '../entities/Wallet'
 import { Business } from '../entities/Business'
-import { toNewTransactionEntry } from '../utils/types.transaction.util'
+import {
+  toNewTransactionEntry,
+  toUpdateTransactionEntry
+} from '../utils/types.transaction.util'
 
 const parseReqParam = (ReqParam: any): number => {
   return parseInt(ReqParam)
@@ -52,7 +55,7 @@ export const getTransaction = async (req: Request, res: Response) => {
       relations: ['business', 'wallet']
     })
     if (!transactions)
-      return res.status(404).json({ message: 'Transactions Not Found' })
+      return res.status(404).json({ message: 'Transaccion no encontrad' })
     return res.status(200).json(transactions)
   } catch (error) {
     if (error instanceof Error) {
@@ -65,7 +68,7 @@ export const getTransactionsByWallet = async (req: Request, res: Response) => {
   try {
     const idWallet = parseReqParam(req.params.id)
     const transactions = await Transaction.find({
-      relations: ['business', 'wallet'],
+      relations: ['business', 'business.user', 'wallet'],
       where: {
         wallet: {
           id: idWallet
@@ -90,9 +93,7 @@ export const createTransaction = async (req: Request, res: Response) => {
     if (business && wallet) {
       const transaction = new Transaction()
       if (wallet.balance < typeTransaction.amount) {
-        return res
-          .status(409)
-          .json({ message: 'You do not have enough balance' })
+        return res.status(409).json({ message: 'No tienes suficiente saldo' })
       }
       transaction.amount = typeTransaction.amount
       transaction.type = business.type
@@ -110,8 +111,26 @@ export const createTransaction = async (req: Request, res: Response) => {
     } else {
       return res
         .status(404)
-        .json({ message: 'Business Not Exist or Wallet Not Exist' })
+        .json({ message: 'El negocio no existe o la cartera no existe' })
     }
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(500).json({ message: error.message })
+    }
+  }
+}
+
+export const updateTransaction = async (req: Request, res: Response) => {
+  const { id } = req.params
+  try {
+    const typeTransaction = toUpdateTransactionEntry(req.body)
+    const transaction = await Transaction.findOneBy({ id: parseInt(id) })
+    if (transaction == null)
+      return res.status(404).json({ message: 'Transaccion no encontrada' })
+    const auxtransaction = new Transaction()
+    auxtransaction.status = typeTransaction.status
+    await Transaction.update({ id: parseInt(id) }, auxtransaction)
+    return res.sendStatus(204)
   } catch (error) {
     if (error instanceof Error) {
       return res.status(500).json({ message: error.message })
