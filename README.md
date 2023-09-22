@@ -35,3 +35,9 @@ npm run dev
 * [TypeORM](https://typeorm.io/)
 * [JWT](https://jwt.io/)
 * [Nodemailer](https://nodemailer.com/)
+
+## Diagrama BD 📚
+
+<p align="center" >
+     <img width="500" heigth="500" src="db/BD_Diagrama.png">
+</p>
