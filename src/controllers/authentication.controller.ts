@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { toNewUserEntry } from '../utils/types.user.util'
 import dotenv from 'dotenv'
-import { generarCode } from '../controllers/wallet.controller'
+import { generarCode, generarFechaExp } from '../controllers/wallet.controller'
 
 dotenv.config()
 
@@ -18,7 +18,7 @@ export const signUp = async (req: Request, res: Response) => {
     const typeUser = toNewUserEntry(req.body)
     const user = await User.findOneBy({ email: typeUser.email })
     if (user) {
-      return res.status(400).json({ message: 'The User already Exists' })
+      return res.status(400).json({ message: 'El usuario ya existe' })
     }
     const newUser = new User()
     newUser.fullname = typeUser.fullname
@@ -30,15 +30,13 @@ export const signUp = async (req: Request, res: Response) => {
       const wallet = new Wallet()
       wallet.balance = 0
       wallet.code = generarCode(process.env.CODE_DIGITS_NUNBER)
-      const fechaActual = new Date()
-      fechaActual.setHours(fechaActual.getHours() - 3)
-      wallet.expAt = fechaActual
+      wallet.expAt = generarFechaExp(process.env.CODE_EXPIRE_TIME)
       wallet.user = newUser
       await newUser.save()
       await wallet.save()
       return res.status(201).json({ credentials: createToken(newUser) })
     } else {
-      return res.status(404).json({ message: 'User is Not Client ' })
+      return res.status(404).json({ message: 'El usuario no es cliente' })
     }
   } catch (error) {
     if (error instanceof Error) {
@@ -55,18 +53,18 @@ export const signIn = async (
   if (!email || !password) {
     return res
       .status(400)
-      .json({ message: 'Please. Send your email and password' })
+      .json({ message: 'Por favor. Envía tu correo y contraseña' })
   }
   const user = await User.findOneBy({ email })
   if (!user) {
-    return res.status(400).json({ message: 'The User does not exists' })
+    return res.status(400).json({ message: 'El usuario no existe' })
   }
   const isMatch = await comparePassword(user, password)
   if (isMatch) {
     return res.status(201).json({ credentials: createToken(user) })
   }
   return res.status(400).json({
-    message: 'The email or password are incorrect'
+    message: 'El correo o la contraseña son incorrectas'
   })
 }
 
@@ -115,7 +113,7 @@ export const refresh = async (req: Request, res: Response): Promise<any> => {
     res.status(401).json({
       errors: [
         {
-          message: 'Token not found'
+          message: 'Token no encontrado'
         }
       ]
     })
@@ -124,7 +122,7 @@ export const refresh = async (req: Request, res: Response): Promise<any> => {
     res.status(403).json({
       errors: [
         {
-          message: 'Invalid refresh token'
+          message: 'Token de actualización no válido'
         }
       ]
     })
@@ -134,7 +132,7 @@ export const refresh = async (req: Request, res: Response): Promise<any> => {
     const { email } = user as any
     const userFound = (await User.findOneBy({ email })) as User
     if (!userFound) {
-      return res.status(400).json({ message: 'The User does not exists' })
+      return res.status(400).json({ message: 'El usuario no existe' })
     }
     const accessToken = jwt.sign(
       {
@@ -151,7 +149,7 @@ export const refresh = async (req: Request, res: Response): Promise<any> => {
     res.status(403).json({
       errors: [
         {
-          message: 'Invalid token'
+          message: 'Token inválido'
         }
       ]
     })

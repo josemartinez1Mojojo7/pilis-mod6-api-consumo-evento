@@ -5,4 +5,7 @@ export interface WalletEntry {
   balance: number
   idUser: number
 }
-export type NewWalletEntry = Omit<WalletEntry, 'id' | 'code' | 'expAt'>
+export type NewWalletEntry = Omit<
+  WalletEntry,
+  'id' | 'code' | 'expAt' | 'balance'
+>

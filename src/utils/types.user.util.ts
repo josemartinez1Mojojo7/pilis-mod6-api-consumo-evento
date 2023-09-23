@@ -13,7 +13,7 @@ export const toNewUserEntry = (object: any): NewUserEntry => {
 export const toUpdateUserEntry = (object: any) => {
   const user = new User()
   if (object.fullname) user.fullname = parseFullname(object.fullname)
-  if (object.dni) user.dni = parseDni(object.dni)
+  if (object.dni || object.dni === 0) user.dni = parseDni(object.dni)
   if (object.email) user.email = parseEmail(object.email)
   if (object.password) user.password = parsePassword(object.password)
   if (object.role) user.role = parseRole(object.role)
@@ -27,7 +27,7 @@ const parseFullname = (fullnameReq: any): string => {
   return fullnameReq
 }
 const parseDni = (dniReq: any): number => {
-  if (!dniReq || !isNumber(dniReq)) {
+  if (!dniReq || !isNumber(dniReq) || dniReq < 0) {
     throw new Error('Incorrect or missing dni: ' + dniReq)
   }
   return dniReq
